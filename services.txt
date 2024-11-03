@@ -18,4 +18,4 @@ ssrf_proxy
 
 certbox
 
-cohere
+cohere staging
