@@ -1,0 +1,21 @@
+vector database
+  - qdrant
+
+postgres
+
+redis
+
+storage
+
+sentry
+  -
+
+resend
+
+nginx https disabled
+
+ssrf_proxy
+
+certbox
+
+cohere

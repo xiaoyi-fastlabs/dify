@@ -102,6 +102,9 @@ x-shared-env: &shared-api-worker-env
   BAIDU_OBS_SECRET_KEY: ${BAIDU_OBS_SECRET_KEY:-}
   BAIDU_OBS_ACCESS_KEY: ${BAIDU_OBS_ACCESS_KEY:-}
   BAIDU_OBS_ENDPOINT: ${BAIDU_OBS_ENDPOINT:-}
+  SUPABASE_BUCKET_NAME: ${SUPABASE_BUCKET_NAME:-mg-dify}
+  SUPABASE_API_KEY: ${SUPABASE_API_KEY:-}
+  SUPABASE_URL: ${SUPABASE_URL:-}
   VECTOR_STORE: ${VECTOR_STORE:-weaviate}
   WEAVIATE_ENDPOINT: ${WEAVIATE_ENDPOINT:-http://weaviate:8080}
   WEAVIATE_API_KEY: ${WEAVIATE_API_KEY:-WVF5YThaHlkYwhGUSmCRgsX3tD5ngdN8pkih}
@@ -349,7 +352,7 @@ services:
       # Mount the redis data directory to the container.
       - ./volumes/redis/data:/data
     # Set the redis password when startup redis server.
-    command: redis-server --requirepass ${REDIS_PASSWORD:-difyai123456}
+    command: redis-server --requirepass ${REDIS_PASSWORD:-8Yo8nZvpFGV}
     healthcheck:
       test: ['CMD', 'redis-cli', 'ping']
 
