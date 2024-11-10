@@ -25,7 +25,6 @@ services:
         value: '-'
     image:
       url: langgenius/dify-web:0.10.2
-    runtime: docker
 
   - type: web
     name: dify-api
@@ -33,7 +32,6 @@ services:
     plan: starter
     image:
       url: langgenius/dify-api:0.10.2
-    runtime: docker
     envVars:
       - key: MODE
         value: api
@@ -272,7 +270,6 @@ services:
     plan: starter
     image:
       url: langgenius/dify-api:0.10.2
-    runtime: docker
     envVars:
       - key: MODE
         value: worker
@@ -511,7 +508,6 @@ services:
     plan: starter
     image:
       url: langgenius/dify-sandbox:0.2.10
-    runtime: docker
     envVars:
       - key: API_KEY
         sync: false
