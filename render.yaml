@@ -25,11 +25,13 @@ services:
         value: '-'
     image:
       url: langgenius/dify-web:0.10.2
+    runtime: image
 
   - type: web
     name: dify-api
     region: frankfurt
     plan: starter
+    runtime: image
     image:
       url: langgenius/dify-api:0.10.2
     envVars:
@@ -268,6 +270,7 @@ services:
     name: dify-worker
     region: frankfurt
     plan: starter
+    runtime: image
     image:
       url: langgenius/dify-api:0.10.2
     envVars:
@@ -506,6 +509,7 @@ services:
     name: sandbox
     region: frankfurt
     plan: starter
+    runtime: image
     image:
       url: langgenius/dify-sandbox:0.2.10
     envVars:
@@ -523,12 +527,12 @@ services:
         value: http://ssrf_proxy:3128
       - key: SANDBOX_PORT
         value: "8194"
-    healthCheckPath: /health
 
   - type: web
     name: ssrf-proxy
     region: frankfurt
     plan: starter
+    runtime: image
     image:
       url: ubuntu/squid:latest
     buildCommand: |
