@@ -1,0 +1,549 @@
+services:
+  - type: web
+    name: dify-web
+    region: frankfurt
+    plan: starter
+    healthCheckPath: /
+    envVars:
+      - key: CONSOLE_API_URL
+        fromService:
+          name: dify-api
+          type: web
+          envVarKey: INTERNAL_URL
+      - key: APP_API_URL
+        fromService:
+          name: dify-api
+          type: web
+          envVarKey: INTERNAL_URL
+      - key: NEXT_TELEMETRY_DISABLED
+        value: "0"
+      - key: TEXT_GENERATION_TIMEOUT_MS
+        value: "60000"
+      - key: SENTRY_DSN
+        value: '-'
+      - key: CSP_WHITELIST
+        value: '-'
+    image:
+      url: langgenius/dify-web:0.10.2
+    dockerCommand: npm start
+    numInstances: 1
+
+  - type: web
+    name: dify-api
+    region: frankfurt
+    plan: starter
+    image:
+      url: langgenius/dify-api:0.10.2
+    envVars:
+      - key: MODE
+        value: api
+      - key: LOG_LEVEL
+        value: INFO
+      - key: LOG_FILE_MAX_SIZE
+        value: 20
+      - key: DEBUG
+        value: "false"
+      - key: FLASK_DEBUG
+        value: "false"
+      - key: SECRET_KEY
+        sync: false
+      - key: INIT_PASSWORD
+        sync: false
+      - key: DEPLOY_ENV
+        value: production
+      - key: CHECK_UPDATE_URL
+        value: https://meetgeorge.co.uk
+      - key: OPENAI_API_BASE
+        value: https://api.openai.com/v1
+      - key: MIGRATION_ENABLED
+        value: "true"
+      - key: FILES_ACCESS_TIMEOUT
+        value: "300"
+      - key: ACCESS_TOKEN_EXPIRE_MINUTES
+        value: "60"
+      - key: APP_MAX_ACTIVE_REQUESTS
+        value: "0"
+      - key: DIFY_BIND_ADDRESS
+        value: "0.0.0.0"
+      - key: DIFY_PORT
+        value: "5001"
+      - key: SERVER_WORKER_AMOUNT
+        value: "5"
+      - key: SERVER_WORKER_CLASS
+        value: gevent
+      - key: CELERY_WORKER_CLASS
+        value: gevent
+      - key: GUNICORN_TIMEOUT
+        value: "360"
+      - key: CELERY_WORKER_AMOUNT
+        value: "5"
+      - key: CELERY_AUTO_SCALE
+        value: "false"
+      - key: CELERY_MAX_WORKERS
+        value: ""
+      - key: CELERY_MIN_WORKERS
+        value: ""
+      - key: API_TOOL_DEFAULT_CONNECT_TIMEOUT
+        value: "10"
+      - key: API_TOOL_DEFAULT_READ_TIMEOUT
+        value: "60"
+      - key: DB_USERNAME
+        sync: false
+      - key: DB_PASSWORD
+        sync: false
+      - key: DB_HOST
+        sync: false
+      - key: DB_DATABASE
+        sync: false
+      - key: SQLALCHEMY_POOL_SIZE
+        value: "30"
+      - key: SQLALCHEMY_POOL_RECYCLE
+        value: "3600"
+      - key: SQLALCHEMY_ECHO
+        value: "false"
+      - key: POSTGRES_MAX_CONNECTIONS
+        value: "100"
+      - key: POSTGRES_SHARED_BUFFERS
+        value: 128MB
+      - key: POSTGRES_WORK_MEM
+        value: 4MB
+      - key: POSTGRES_MAINTENANCE_WORK_MEM
+        value: 64MB
+      - key: POSTGRES_EFFECTIVE_CACHE_SIZE
+        value: 4096MB
+      - key: REDIS_HOST
+        sync: false
+      - key: REDIS_PORT
+        sync: false
+      - key: REDIS_USERNAME
+        sync: false
+      - key: REDIS_PASSWORD
+        sync: false
+      - key: REDIS_USE_SSL
+        value: "true"
+      - key: REDIS_DB
+        value: "1"
+      - key: REDIS_USE_SENTINEL
+        value: "false"
+      - key: CELERY_BROKER_URL
+        sync: false
+      - key: BROKER_USE_SSL
+        value: "true"
+      - key: CELERY_USE_SENTINEL
+        value: "false"
+      - key: CELERY_SENTINEL_MASTER_NAME
+        value: ""
+      - key: CELERY_SENTINEL_SOCKET_TIMEOUT
+        value: "0.1"
+      - key: WEB_API_CORS_ALLOW_ORIGINS
+        value: "*"
+      - key: CONSOLE_CORS_ALLOW_ORIGINS
+        value: "*"
+      - key: STORAGE_TYPE
+        value: s3
+      - key: STORAGE_LOCAL_PATH
+        value: storage
+      - key: S3_USE_AWS_MANAGED_IAM
+        value: "false"
+      - key: S3_ENDPOINT
+        value: https://s3.eu-west-2.amazonaws.com
+      - key: S3_REGION
+        value: eu-west-2
+      - key: S3_BUCKET_NAME
+        value: mg-s3-staging
+      - key: S3_ACCESS_KEY
+        sync: false
+      - key: S3_SECRET_KEY
+        sync: false
+      - key: VECTOR_STORE
+        value: qdrant
+      - key: QDRANT_URL
+        sync: false
+      - key: QDRANT_API_KEY
+        sync: false
+      - key: QDRANT_CLIENT_TIMEOUT
+        value: "20"
+      - key: QDRANT_GRPC_ENABLED
+        value: "false"
+      - key: QDRANT_GRPC_PORT
+        value: "6334"
+      - key: UPLOAD_FILE_SIZE_LIMIT
+        value: "15"
+      - key: UPLOAD_FILE_BATCH_LIMIT
+        value: "5"
+      - key: ETL_TYPE
+        value: dify
+      - key: UNSTRUCTURED_API_URL
+        value: ""
+      - key: PROMPT_GENERATION_MAX_TOKENS
+        value: "512"
+      - key: CODE_GENERATION_MAX_TOKENS
+        value: "1024"
+      - key: MULTIMODAL_SEND_IMAGE_FORMAT
+        value: base64
+      - key: UPLOAD_IMAGE_FILE_SIZE_LIMIT
+        value: "10"
+      - key: UPLOAD_VIDEO_FILE_SIZE_LIMIT
+        value: "100"
+      - key: UPLOAD_AUDIO_FILE_SIZE_LIMIT
+        value: "50"
+      - key: API_SENTRY_DSN
+        value: ""
+      - key: API_SENTRY_TRACES_SAMPLE_RATE
+        value: "1.0"
+      - key: API_SENTRY_PROFILES_SAMPLE_RATE
+        value: "1.0"
+      - key: WEB_SENTRY_DSN
+        value: ""
+      - key: MAIL_TYPE
+        value: resend
+      - key: MAIL_DEFAULT_SEND_FROM
+        value: george@meetgeorge.co.uk
+      - key: RESEND_API_KEY
+        sync: false
+      - key: RESEND_API_URL
+        value: https://api.resend.com
+      - key: INDEXING_MAX_SEGMENTATION_TOKENS_LENGTH
+        value: "1000"
+      - key: INVITE_EXPIRY_HOURS
+        value: "72"
+      - key: RESET_PASSWORD_TOKEN_EXPIRY_MINUTES
+        value: "5"
+      - key: CODE_EXECUTION_ENDPOINT
+        value: http://sandbox:8194
+      - key: CODE_MAX_NUMBER
+        value: "9223372036854775807"
+      - key: CODE_MIN_NUMBER
+        value: "-9223372036854775808"
+      - key: CODE_MAX_DEPTH
+        value: "5"
+      - key: CODE_MAX_PRECISION
+        value: "20"
+      - key: CODE_MAX_STRING_LENGTH
+        value: "80000"
+      - key: TEMPLATE_TRANSFORM_MAX_LENGTH
+        value: "80000"
+      - key: CODE_MAX_STRING_ARRAY_LENGTH
+        value: "30"
+      - key: CODE_MAX_OBJECT_ARRAY_LENGTH
+        value: "30"
+      - key: CODE_MAX_NUMBER_ARRAY_LENGTH
+        value: "1000"
+      - key: WORKFLOW_MAX_EXECUTION_STEPS
+        value: "500"
+      - key: WORKFLOW_MAX_EXECUTION_TIME
+        value: "1200"
+      - key: WORKFLOW_CALL_MAX_DEPTH
+        value: "5"
+      - key: MAX_VARIABLE_SIZE
+        value: "204800"
+      - key: HTTP_REQUEST_NODE_MAX_BINARY_SIZE
+        value: "10485760"
+      - key: HTTP_REQUEST_NODE_MAX_TEXT_SIZE
+        value: "1048576"
+      - key: SSRF_PROXY_HTTP_URL
+        value: http://ssrf_proxy:3128
+      - key: SSRF_PROXY_HTTPS_URL
+        value: http://ssrf_proxy:3128
+      - key: TEXT_GENERATION_TIMEOUT_MS
+        value: "60000"
+      - key: POSITION_TOOL_PINS
+        value: ""
+      - key: POSITION_TOOL_INCLUDES
+        value: ""
+      - key: POSITION_TOOL_EXCLUDES
+        value: ""
+      - key: POSITION_PROVIDER_PINS
+        value: ""
+      - key: POSITION_PROVIDER_INCLUDES
+        value: ""
+      - key: POSITION_PROVIDER_EXCLUDES
+        value: ""
+      - key: CSP_WHITELIST
+        value: "-"
+    disk:
+      name: storage
+      mountPath: /app/api/storage
+      sizeGB: 10
+
+  - type: worker
+    name: dify-worker
+    region: frankfurt
+    plan: starter
+    image:
+      url: langgenius/dify-api:0.10.2
+    envVars:
+      - key: MODE
+        value: worker
+      - key: LOG_LEVEL
+        value: INFO
+      - key: LOG_FILE_MAX_SIZE
+        value: 20
+      - key: DEBUG
+        value: "false"
+      - key: FLASK_DEBUG
+        value: "false"
+      - key: SECRET_KEY
+        sync: false
+      - key: INIT_PASSWORD
+        sync: false
+      - key: DEPLOY_ENV
+        value: production
+      - key: CHECK_UPDATE_URL
+        value: https://meetgeorge.co.uk
+      - key: OPENAI_API_BASE
+        value: https://api.openai.com/v1
+      - key: MIGRATION_ENABLED
+        value: "true"
+      - key: FILES_ACCESS_TIMEOUT
+        value: "300"
+      - key: ACCESS_TOKEN_EXPIRE_MINUTES
+        value: "60"
+      - key: APP_MAX_ACTIVE_REQUESTS
+        value: "0"
+      - key: DIFY_BIND_ADDRESS
+        value: "0.0.0.0"
+      - key: DIFY_PORT
+        value: "5001"
+      - key: SERVER_WORKER_AMOUNT
+        value: "5"
+      - key: SERVER_WORKER_CLASS
+        value: gevent
+      - key: CELERY_WORKER_CLASS
+        value: gevent
+      - key: GUNICORN_TIMEOUT
+        value: "360"
+      - key: CELERY_WORKER_AMOUNT
+        value: "5"
+      - key: CELERY_AUTO_SCALE
+        value: "false"
+      - key: CELERY_MAX_WORKERS
+        value: ""
+      - key: CELERY_MIN_WORKERS
+        value: ""
+      - key: API_TOOL_DEFAULT_CONNECT_TIMEOUT
+        value: "10"
+      - key: API_TOOL_DEFAULT_READ_TIMEOUT
+        value: "60"
+      - key: DB_USERNAME
+        sync: false
+      - key: DB_PASSWORD
+        sync: false
+      - key: DB_HOST
+        sync: false
+      - key: DB_DATABASE
+        sync: false
+      - key: SQLALCHEMY_POOL_SIZE
+        value: "30"
+      - key: SQLALCHEMY_POOL_RECYCLE
+        value: "3600"
+      - key: SQLALCHEMY_ECHO
+        value: "false"
+      - key: POSTGRES_MAX_CONNECTIONS
+        value: "100"
+      - key: POSTGRES_SHARED_BUFFERS
+        value: 128MB
+      - key: POSTGRES_WORK_MEM
+        value: 4MB
+      - key: POSTGRES_MAINTENANCE_WORK_MEM
+        value: 64MB
+      - key: POSTGRES_EFFECTIVE_CACHE_SIZE
+        value: 4096MB
+      - key: REDIS_HOST
+        sync: false
+      - key: REDIS_PORT
+        sync: false
+      - key: REDIS_USERNAME
+        sync: false
+      - key: REDIS_PASSWORD
+        sync: false
+      - key: REDIS_USE_SSL
+        value: "true"
+      - key: REDIS_DB
+        value: "1"
+      - key: REDIS_USE_SENTINEL
+        value: "false"
+      - key: CELERY_BROKER_URL
+        sync: false
+      - key: BROKER_USE_SSL
+        value: "true"
+      - key: CELERY_USE_SENTINEL
+        value: "false"
+      - key: CELERY_SENTINEL_MASTER_NAME
+        value: ""
+      - key: CELERY_SENTINEL_SOCKET_TIMEOUT
+        value: "0.1"
+      - key: WEB_API_CORS_ALLOW_ORIGINS
+        value: "*"
+      - key: CONSOLE_CORS_ALLOW_ORIGINS
+        value: "*"
+      - key: STORAGE_TYPE
+        value: s3
+      - key: STORAGE_LOCAL_PATH
+        value: storage
+      - key: S3_USE_AWS_MANAGED_IAM
+        value: "false"
+      - key: S3_ENDPOINT
+        value: https://s3.eu-west-2.amazonaws.com
+      - key: S3_REGION
+        value: eu-west-2
+      - key: S3_BUCKET_NAME
+        value: mg-s3-staging
+      - key: S3_ACCESS_KEY
+        sync: false
+      - key: S3_SECRET_KEY
+        sync: false
+      - key: VECTOR_STORE
+        value: qdrant
+      - key: QDRANT_URL
+        sync: false
+      - key: QDRANT_API_KEY
+        sync: false
+      - key: QDRANT_CLIENT_TIMEOUT
+        value: "20"
+      - key: QDRANT_GRPC_ENABLED
+        value: "false"
+      - key: QDRANT_GRPC_PORT
+        value: "6334"
+      - key: UPLOAD_FILE_SIZE_LIMIT
+        value: "15"
+      - key: UPLOAD_FILE_BATCH_LIMIT
+        value: "5"
+      - key: ETL_TYPE
+        value: dify
+      - key: UNSTRUCTURED_API_URL
+        value: ""
+      - key: PROMPT_GENERATION_MAX_TOKENS
+        value: "512"
+      - key: CODE_GENERATION_MAX_TOKENS
+        value: "1024"
+      - key: MULTIMODAL_SEND_IMAGE_FORMAT
+        value: base64
+      - key: UPLOAD_IMAGE_FILE_SIZE_LIMIT
+        value: "10"
+      - key: UPLOAD_VIDEO_FILE_SIZE_LIMIT
+        value: "100"
+      - key: UPLOAD_AUDIO_FILE_SIZE_LIMIT
+        value: "50"
+      - key: API_SENTRY_DSN
+        value: ""
+      - key: API_SENTRY_TRACES_SAMPLE_RATE
+        value: "1.0"
+      - key: API_SENTRY_PROFILES_SAMPLE_RATE
+        value: "1.0"
+      - key: WEB_SENTRY_DSN
+        value: ""
+      - key: MAIL_TYPE
+        value: resend
+      - key: MAIL_DEFAULT_SEND_FROM
+        value: george@meetgeorge.co.uk
+      - key: RESEND_API_KEY
+        sync: false
+      - key: RESEND_API_URL
+        value: https://api.resend.com
+      - key: INDEXING_MAX_SEGMENTATION_TOKENS_LENGTH
+        value: "1000"
+      - key: INVITE_EXPIRY_HOURS
+        value: "72"
+      - key: RESET_PASSWORD_TOKEN_EXPIRY_MINUTES
+        value: "5"
+      - key: CODE_EXECUTION_ENDPOINT
+        value: http://sandbox:8194
+      - key: CODE_MAX_NUMBER
+        value: "9223372036854775807"
+      - key: CODE_MIN_NUMBER
+        value: "-9223372036854775808"
+      - key: CODE_MAX_DEPTH
+        value: "5"
+      - key: CODE_MAX_PRECISION
+        value: "20"
+      - key: CODE_MAX_STRING_LENGTH
+        value: "80000"
+      - key: TEMPLATE_TRANSFORM_MAX_LENGTH
+        value: "80000"
+      - key: CODE_MAX_STRING_ARRAY_LENGTH
+        value: "30"
+      - key: CODE_MAX_OBJECT_ARRAY_LENGTH
+        value: "30"
+      - key: CODE_MAX_NUMBER_ARRAY_LENGTH
+        value: "1000"
+      - key: WORKFLOW_MAX_EXECUTION_STEPS
+        value: "500"
+      - key: WORKFLOW_MAX_EXECUTION_TIME
+        value: "1200"
+      - key: WORKFLOW_CALL_MAX_DEPTH
+        value: "5"
+      - key: MAX_VARIABLE_SIZE
+        value: "204800"
+      - key: HTTP_REQUEST_NODE_MAX_BINARY_SIZE
+        value: "10485760"
+      - key: HTTP_REQUEST_NODE_MAX_TEXT_SIZE
+        value: "1048576"
+      - key: SSRF_PROXY_HTTP_URL
+        value: http://ssrf_proxy:3128
+      - key: SSRF_PROXY_HTTPS_URL
+        value: http://ssrf_proxy:3128
+      - key: TEXT_GENERATION_TIMEOUT_MS
+        value: "60000"
+      - key: POSITION_TOOL_PINS
+        value: ""
+      - key: POSITION_TOOL_INCLUDES
+        value: ""
+      - key: POSITION_TOOL_EXCLUDES
+        value: ""
+      - key: POSITION_PROVIDER_PINS
+        value: ""
+      - key: POSITION_PROVIDER_INCLUDES
+        value: ""
+      - key: POSITION_PROVIDER_EXCLUDES
+        value: ""
+      - key: CSP_WHITELIST
+        value: "-"
+    disk:
+      name: storage
+      mountPath: /app/api/storage
+      sizeGB: 10
+
+  - type: web
+    name: sandbox
+    region: frankfurt
+    plan: starter
+    image:
+      url: langgenius/dify-sandbox:0.2.10
+    envVars:
+      - key: API_KEY
+        sync: false
+      - key: GIN_MODE
+        value: release
+      - key: WORKER_TIMEOUT
+        value: 15
+      - key: ENABLE_NETWORK
+        value: "true"
+      - key: HTTP_PROXY
+        value: http://ssrf_proxy:3128
+      - key: HTTPS_PROXY
+        value: http://ssrf_proxy:3128
+      - key: SANDBOX_PORT
+        value: "8194"
+
+  - type: web
+    name: ssrf-proxy
+    region: frankfurt
+    plan: starter
+    image:
+      url: ubuntu/squid:latest
+    envVars:
+      - key: HTTP_PORT
+        value: "3128"
+      - key: COREDUMP_DIR
+        value: /var/spool/squid
+      - key: REVERSE_PROXY_PORT
+        value: "8194"
+      - key: SANDBOX_HOST
+        value: sandbox
+      - key: SANDBOX_PORT
+        value: "8194"
+    disk:
+      name: squid-config
+      mountPath: /etc/squid
+      sizeGB: 1
