@@ -2,7 +2,7 @@ services:
   - type: web
     name: dify-web
     region: frankfurt
-    plan: starter
+    plan: standard
     healthCheckPath: /
     envVars:
       - key: CONSOLE_API_URL
@@ -30,7 +30,7 @@ services:
   - type: web
     name: dify-api
     region: frankfurt
-    plan: starter
+    plan: standard
     runtime: image
     image:
       url: langgenius/dify-api:0.10.2
@@ -269,7 +269,7 @@ services:
   - type: worker
     name: dify-worker
     region: frankfurt
-    plan: starter
+    plan: standard
     runtime: image
     image:
       url: langgenius/dify-api:0.10.2
