@@ -25,6 +25,7 @@ services:
         value: '-'
     image:
       url: langgenius/dify-web:0.10.2
+    runtime: docker
 
   - type: web
     name: dify-api
@@ -32,6 +33,7 @@ services:
     plan: starter
     image:
       url: langgenius/dify-api:0.10.2
+    runtime: docker
     envVars:
       - key: MODE
         value: api
@@ -270,6 +272,7 @@ services:
     plan: starter
     image:
       url: langgenius/dify-api:0.10.2
+    runtime: docker
     envVars:
       - key: MODE
         value: worker
@@ -508,6 +511,7 @@ services:
     plan: starter
     image:
       url: langgenius/dify-sandbox:0.2.10
+    runtime: docker
     envVars:
       - key: API_KEY
         sync: false
@@ -523,6 +527,7 @@ services:
         value: http://ssrf_proxy:3128
       - key: SANDBOX_PORT
         value: "8194"
+    healthCheckPath: /health
 
   - type: web
     name: ssrf-proxy
@@ -530,6 +535,93 @@ services:
     plan: starter
     image:
       url: ubuntu/squid:latest
+    runtime: docker
+    buildCommand: |
+      mkdir -p /etc/squid
+      cat > /etc/squid/squid.conf.template << 'EOL'
+      acl localnet src 0.0.0.1-0.255.255.255	# RFC 1122 "this" network (LAN)
+      acl localnet src 10.0.0.0/8		# RFC 1918 local private network (LAN)
+      acl localnet src 100.64.0.0/10		# RFC 6598 shared address space (CGN)
+      acl localnet src 169.254.0.0/16 	# RFC 3927 link-local (directly plugged) machines
+      acl localnet src 172.16.0.0/12		# RFC 1918 local private network (LAN)
+      acl localnet src 192.168.0.0/16		# RFC 1918 local private network (LAN)
+      acl localnet src fc00::/7       	# RFC 4193 local private network range
+      acl localnet src fe80::/10      	# RFC 4291 link-local (directly plugged) machines
+      acl SSL_ports port 443
+      acl Safe_ports port 80		# http
+      acl Safe_ports port 21		# ftp
+      acl Safe_ports port 443		# https
+      acl Safe_ports port 70		# gopher
+      acl Safe_ports port 210		# wais
+      acl Safe_ports port 1025-65535	# unregistered ports
+      acl Safe_ports port 280		# http-mgmt
+      acl Safe_ports port 488		# gss-http
+      acl Safe_ports port 591		# filemaker
+      acl Safe_ports port 777		# multiling http
+      acl CONNECT method CONNECT
+      http_access deny !Safe_ports
+      http_access deny CONNECT !SSL_ports
+      http_access allow localhost manager
+      http_access deny manager
+      http_access allow localhost
+      include /etc/squid/conf.d/*.conf
+      http_access deny all
+
+      ################################## Proxy Server ################################
+      http_port ${HTTP_PORT}
+      coredump_dir ${COREDUMP_DIR}
+      refresh_pattern ^ftp:		1440	20%	10080
+      refresh_pattern ^gopher:	1440	0%	1440
+      refresh_pattern -i (/cgi-bin/|\?) 0	0%	0
+      refresh_pattern \/(Packages|Sources)(|\.bz2|\.gz|\.xz)$ 0 0% 0 refresh-ims
+      refresh_pattern \/Release(|\.gpg)$ 0 0% 0 refresh-ims
+      refresh_pattern \/InRelease$ 0 0% 0 refresh-ims
+      refresh_pattern \/(Translation-.*)(|\.bz2|\.gz|\.xz)$ 0 0% 0 refresh-ims
+      refresh_pattern .		0	20%	4320
+
+
+      # cache_dir ufs /var/spool/squid 100 16 256
+      # upstream proxy, set to your own upstream proxy IP to avoid SSRF attacks
+      # cache_peer 172.1.1.1 parent 3128 0 no-query no-digest no-netdb-exchange default 
+
+      ################################## Reverse Proxy To Sandbox ################################
+      http_port ${REVERSE_PROXY_PORT} accel vhost
+      cache_peer ${SANDBOX_HOST} parent ${SANDBOX_PORT} 0 no-query originserver
+      acl src_all src all
+      http_access allow src_all
+      EOL
+
+      cat > /docker-entrypoint.sh << 'EOL'
+      #!/bin/sh
+      echo "[ENTRYPOINT] re-create snakeoil self-signed certificate removed in the build process"
+      if [ ! -f /etc/ssl/private/ssl-cert-snakeoil.key ]; then
+          /usr/sbin/make-ssl-cert generate-default-snakeoil --force-overwrite > /dev/null 2>&1
+      fi
+
+      tail -F /var/log/squid/access.log 2>/dev/null &
+      tail -F /var/log/squid/error.log 2>/dev/null &
+      tail -F /var/log/squid/store.log 2>/dev/null &
+      tail -F /var/log/squid/cache.log 2>/dev/null &
+
+      # Replace environment variables in the template and output to the squid.conf
+      echo "[ENTRYPOINT] replacing environment variables in the template"
+      awk '{
+          while(match($0, /\${[A-Za-z_][A-Za-z_0-9]*}/)) {
+              var = substr($0, RSTART+2, RLENGTH-3)
+              val = ENVIRON[var]
+              $0 = substr($0, 1, RSTART-1) val substr($0, RSTART+RLENGTH)
+          }
+          print
+      }' /etc/squid/squid.conf.template > /etc/squid/squid.conf
+
+      /usr/sbin/squid -Nz
+      echo "[ENTRYPOINT] starting squid"
+      /usr/sbin/squid -f /etc/squid/squid.conf -NYC 1
+
+      EOL
+
+      chmod +x /docker-entrypoint.sh
+    startCommand: /docker-entrypoint.sh
     envVars:
       - key: HTTP_PORT
         value: "3128"
@@ -541,7 +633,3 @@ services:
         value: sandbox
       - key: SANDBOX_PORT
         value: "8194"
-    disk:
-      name: squid-config
-      mountPath: /etc/squid
-      sizeGB: 1
