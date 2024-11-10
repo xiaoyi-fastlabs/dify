@@ -5,16 +5,16 @@ services:
     plan: standard
     healthCheckPath: /
     envVars:
-      - key: CONSOLE_API_URL
-        fromService:
-          name: dify-api
-          type: web
-          envVarKey: INTERNAL_URL
-      - key: APP_API_URL
-        fromService:
-          name: dify-api
-          type: web
-          envVarKey: INTERNAL_URL
+      # - key: CONSOLE_API_URL
+      #   fromService:
+      #     name: dify-api
+      #     type: web
+      #     envVarKey: INTERNAL_URL
+      # - key: APP_API_URL
+      #   fromService:
+      #     name: dify-api
+      #     type: web
+      #     envVarKey: INTERNAL_URL
       - key: NEXT_TELEMETRY_DISABLED
         value: "0"
       - key: TEXT_GENERATION_TIMEOUT_MS
