@@ -535,7 +535,6 @@ services:
     plan: starter
     image:
       url: ubuntu/squid:latest
-    runtime: docker
     buildCommand: |
       mkdir -p /etc/squid
       cat > /etc/squid/squid.conf.template << 'EOL'
