@@ -534,7 +534,7 @@ services:
     plan: starter
     runtime: docker
     dockerfilePath: ./docker/ssrf_proxy/dockerfile
-    startCommand: /docker-entrypoint.sh
+    dockerCommand: /docker-entrypoint.sh
     envVars:
       - key: HTTP_PORT
         value: "3128"
