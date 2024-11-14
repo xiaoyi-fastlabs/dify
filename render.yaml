@@ -507,7 +507,7 @@ services:
 
   - type: web
     name: sandbox
-    region: frankfurt
+    region: singapore
     plan: starter
     runtime: image
     image:
@@ -530,7 +530,7 @@ services:
 
   - type: web
     name: ssrf-proxy
-    region: frankfurt
+    region: singapore
     plan: starter
     runtime: docker
     dockerfilePath: ./docker/ssrf_proxy/dockerfile
