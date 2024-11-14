@@ -1,7 +1,7 @@
 services:
   - type: web
     name: dify-web
-    region: frankfurt
+    region: singapore
     plan: standard
     healthCheckPath: /
     envVars:
@@ -29,8 +29,8 @@ services:
 
   - type: web
     name: dify-api
-    region: frankfurt
-    plan: standard
+    region: singapore
+    plan: pro
     runtime: image
     image:
       url: langgenius/dify-api:0.10.2
@@ -261,15 +261,15 @@ services:
         value: ""
       - key: CSP_WHITELIST
         value: "-"
-    disk:
-      name: storage
-      mountPath: /app/api/storage
-      sizeGB: 10
+    # disk:
+    #   name: storage
+    #   mountPath: /app/api/storage
+    #   sizeGB: 10
 
   - type: worker
     name: dify-worker
-    region: frankfurt
-    plan: standard
+    region: singapore
+    plan: pro
     runtime: image
     image:
       url: langgenius/dify-api:0.10.2
@@ -500,10 +500,10 @@ services:
         value: ""
       - key: CSP_WHITELIST
         value: "-"
-    disk:
-      name: storage
-      mountPath: /app/api/storage
-      sizeGB: 10
+    # disk:
+    #   name: storage
+    #   mountPath: /app/api/storage
+    #   sizeGB: 10
 
   - type: web
     name: sandbox
