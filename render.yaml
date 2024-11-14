@@ -505,44 +505,44 @@ services:
     #   mountPath: /app/api/storage
     #   sizeGB: 10
 
-  - type: web
-    name: sandbox
-    region: singapore
-    plan: starter
-    runtime: image
-    image:
-      url: langgenius/dify-sandbox:0.2.10
-    envVars:
-      - key: API_KEY
-        sync: false
-      - key: GIN_MODE
-        value: release
-      - key: WORKER_TIMEOUT
-        value: 15
-      - key: ENABLE_NETWORK
-        value: "true"
-      - key: HTTP_PROXY
-        value: http://ssrf_proxy:3128
-      - key: HTTPS_PROXY
-        value: http://ssrf_proxy:3128
-      - key: SANDBOX_PORT
-        value: "8194"
+  # - type: web
+  #   name: sandbox
+  #   region: singapore
+  #   plan: starter
+  #   runtime: image
+  #   image:
+  #     url: langgenius/dify-sandbox:0.2.10
+  #   envVars:
+  #     - key: API_KEY
+  #       sync: false
+  #     - key: GIN_MODE
+  #       value: release
+  #     - key: WORKER_TIMEOUT
+  #       value: 15
+  #     - key: ENABLE_NETWORK
+  #       value: "true"
+  #     - key: HTTP_PROXY
+  #       value: http://ssrf_proxy:3128
+  #     - key: HTTPS_PROXY
+  #       value: http://ssrf_proxy:3128
+  #     - key: SANDBOX_PORT
+  #       value: "8194"
 
-  - type: web
-    name: ssrf-proxy
-    region: singapore
-    plan: starter
-    runtime: docker
-    dockerfilePath: ./docker/ssrf_proxy/dockerfile
-    dockerCommand: /docker-entrypoint.sh
-    envVars:
-      - key: HTTP_PORT
-        value: "3128"
-      - key: COREDUMP_DIR
-        value: /var/spool/squid
-      - key: REVERSE_PROXY_PORT
-        value: "8194"
-      - key: SANDBOX_HOST
-        value: sandbox
-      - key: SANDBOX_PORT
-        value: "8194"
+  # - type: web
+  #   name: ssrf-proxy
+  #   region: singapore
+  #   plan: starter
+  #   runtime: docker
+  #   dockerfilePath: ./docker/ssrf_proxy/dockerfile
+  #   dockerCommand: /docker-entrypoint.sh
+  #   envVars:
+  #     - key: HTTP_PORT
+  #       value: "3128"
+  #     - key: COREDUMP_DIR
+  #       value: /var/spool/squid
+  #     - key: REVERSE_PROXY_PORT
+  #       value: "8194"
+  #     - key: SANDBOX_HOST
+  #       value: sandbox
+  #     - key: SANDBOX_PORT
+  #       value: "8194"
